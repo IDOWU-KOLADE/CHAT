@@ -1,4 +1,5 @@
-export function ConversationItem({ name, status, isOnline }) {
+import Link from "next/link";
+export function ConversationItem({id, name, status, isOnline }) {
   // Get initials from name for avatar placeholder
   const initials = name
     .split(" ")
@@ -7,6 +8,7 @@ export function ConversationItem({ name, status, isOnline }) {
     .toUpperCase();
 
   return (
+    <Link href={'/conversations/${id}'}>
     <div className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors cursor-pointer">
       {/* Avatar */}
       <div className="relative shrink-0">
@@ -26,5 +28,6 @@ export function ConversationItem({ name, status, isOnline }) {
         </span>
       </div>
     </div>
+    </Link>
   );
 }
