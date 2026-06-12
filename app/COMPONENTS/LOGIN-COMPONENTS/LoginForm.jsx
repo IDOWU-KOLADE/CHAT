@@ -1,10 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const handleLogin = async () => {
+  setLoading(true);
+  setError("");
 
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    setError(error.message);
+    setLoading(false);
+    return;
+  }
+
+  window.location.href = "/conversations";
+};
   return (
     <div className="flex flex-col gap-5">
 
@@ -13,7 +34,7 @@ export function LoginForm() {
         <label className="text-sm font-medium text-slate-700">Email</label>
         <input
           type="email"
-          placeholder="you@example.com"
+          placeholder="you@example.com" value={email} onChange={(e)=> setEmail(e.target.value)}
           className="w-full px-4 py-3 text-sm text-slate-900 placeholder-slate-400 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
@@ -24,7 +45,7 @@ export function LoginForm() {
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
+            placeholder="Enter your password" value={password} onChange={(e)=> setPassword(e.target.value)}
             className="w-full px-4 py-3 text-sm text-slate-900 placeholder-slate-400 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-11"
           />
           <button
@@ -62,10 +83,10 @@ export function LoginForm() {
           Forgot password?
         </a>
       </div>
-
+      {error && <p className="text-xs text-red-500">{error}</p>}
       {/* Login button */}
-      <button className="w-full py-3 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors duration-150">
-        Login
+      <button onClick={handleLogin} disabled={loading} className="w-full py-3 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors duration-150">
+       {loading ? "Logging in..." : "Login"}
       </button>
 
       {/* Divider */}

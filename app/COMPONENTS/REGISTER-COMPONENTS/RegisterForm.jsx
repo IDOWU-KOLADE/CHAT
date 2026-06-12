@@ -1,10 +1,35 @@
 "use client";
-
+import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  const handleSignUp = async () => {
+  setLoading(true);
+  setError("");
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName }
+    }
+  });
+
+  if (error) {
+    setError(error.message);
+    setLoading(false);
+    return;
+  }
+
+  window.location.href = "/login";
+};
   return (
     <div className="flex flex-col gap-5">
 
@@ -13,7 +38,7 @@ export function RegisterForm() {
         <label className="text-sm font-medium text-slate-700">Full Name</label>
         <input
           type="text"
-          placeholder="Your full name"
+          placeholder="Your full name" value={fullName} onChange={(e)=> setFullName(e.target.value)}
           className="w-full px-4 py-3 text-sm text-slate-900 placeholder-slate-400 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
@@ -22,7 +47,7 @@ export function RegisterForm() {
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-slate-700">Email</label>
         <input
-          type="email"
+          type="email" value={email} onChange={(e)=> setEmail(e.target.value)}
           placeholder="you@example.com"
           className="w-full px-4 py-3 text-sm text-slate-900 placeholder-slate-400 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
@@ -34,7 +59,7 @@ export function RegisterForm() {
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
-            placeholder="Create a password"
+            placeholder="Create a password" onChange={(e)=> setPassword(e.target.value)}
             className="w-full px-4 py-3 text-sm text-slate-900 placeholder-slate-400 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-11"
           />
           <button
@@ -58,10 +83,10 @@ export function RegisterForm() {
           </button>
         </div>
       </div>
-
+      {error && <p className="text-xs text-red-500">{error}</p>}
       {/* Sign Up button */}
-      <button className="w-full py-3 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors duration-150">
-        Sign Up
+      <button onClick={handleSignUp} disabled={loading} className="w-full py-3 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors duration-150">
+        {loading ? "Creating account..." : "Sign Up"} 
       </button>
 
       {/* Divider */}
