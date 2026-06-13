@@ -28,6 +28,20 @@ export function RegisterForm() {
     return;
   }
 
+  // Save the user to profiles table
+const { error: profileError } = await supabase
+  .from("profiles")
+  .insert({
+    id: data.user.id,
+    full_name: fullName,
+  });
+
+if (profileError) {
+  setError(profileError.message);
+  setLoading(false);
+  return;
+}
+
   window.location.href = "/login";
 };
   return (
